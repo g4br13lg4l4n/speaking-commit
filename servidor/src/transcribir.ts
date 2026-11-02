@@ -49,6 +49,12 @@ export async function transcribir(archivo: string, mime: string): Promise<string
     body: form,
   });
   if (r.status === 401 || r.status === 403) {
+    // Las llaves de Groq empiezan con gsk_: si STT_URL sigue apuntando a OpenAI, el rechazo no es por la llave.
+    if (config.stt.llave.startsWith('gsk_') && !config.stt.url.includes('groq.com')) {
+      throw new ErrorDeConfiguracion(
+        'Tu STT_API_KEY es de Groq, pero STT_URL apunta a otro servicio. En servidor/.env usa STT_URL=https://api.groq.com/openai/v1/audio/transcriptions y STT_MODELO=whisper-large-v3.',
+      );
+    }
     throw new ErrorDeConfiguracion('El servicio de transcripción rechazó la llave (STT_API_KEY). Revísala en servidor/.env.');
   }
   if (!r.ok) throw new Error(`La transcripción falló (${r.status}): ${(await r.text()).slice(0, 300)}`);
