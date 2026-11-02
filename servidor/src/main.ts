@@ -22,7 +22,8 @@ app.use((req, res, next) => {
     res.status(403).json({ error: 'Host no permitido.' });
     return;
   }
-  if (req.path.startsWith('/api/') && req.method !== 'GET' && req.method !== 'HEAD' && req.headers[ENCABEZADO_APP] !== '1') {
+  // Sin mirar la ruta: Express no distingue mayúsculas, y "/API/..." llegaría a las mismas rutas.
+  if (req.method !== 'GET' && req.method !== 'HEAD' && req.headers[ENCABEZADO_APP] !== '1') {
     res.status(403).json({ error: 'Petición rechazada: no viene de la app.' });
     return;
   }
