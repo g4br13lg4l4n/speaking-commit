@@ -1,0 +1,12 @@
+<header class="barra">
+  <a routerLink="/" class="marca"><span>Inglés</span><span class="ver">v1</span></a>
+  <nav aria-label="Secciones">
+    <a routerLink="/" routerLinkActive="activa" [routerLinkActiveOptions]="{ exact: true }">Practicar</a>
+    <a routerLink="/historial" routerLinkActive="activa">Historial</a>
+    <a routerLink="/progreso" routerLinkActive="activa">Progreso</a>
+    <a [href]="tracker" target="_blank" rel="noopener" class="externo">Racha ↗</a>
+  </nav>
+</header>
+<main class="contenido">
+  <router-outlet />
+</main>

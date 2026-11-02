@@ -1,0 +1,11 @@
+{
+  "name": "ingles-v1",
+  "private": true,
+  "scripts": {
+    "instalar": "npm ci --prefix servidor && npm ci --prefix app",
+    "compilar": "npm run build --prefix app",
+    "iniciar": "npm run compilar && npm start --prefix servidor",
+    "demo": "npm run compilar && npm run demo --prefix servidor",
+    "verificar": "npm run typecheck --prefix servidor && npm test --prefix servidor && npm test --prefix app -- --watch=false && npm run compilar"
+  }
+}
