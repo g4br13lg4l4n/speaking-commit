@@ -9,6 +9,25 @@ import { calcularMetricas } from './metricas.ts';
 import { ErrorDeConfiguracion, extension, transcribir } from './transcribir.ts';
 
 const app = express();
+
+// Escuchar solo en 127.0.0.1 no basta: una página maliciosa abierta en el navegador puede apuntar su dominio
+// a 127.0.0.1 (DNS rebinding) o mandar formularios aquí (CSRF). Por eso solo se aceptan peticiones dirigidas
+// a este equipo, y las que cambian algo deben traer un encabezado propio, que obliga al navegador a pedir
+// permiso (preflight) y este servidor nunca lo concede a otros orígenes.
+const hostsPermitidos = new Set([`127.0.0.1:${config.puerto}`, `localhost:${config.puerto}`]);
+export const ENCABEZADO_APP = 'x-ingles-app';
+
+app.use((req, res, next) => {
+  if (!hostsPermitidos.has(req.headers.host ?? '')) {
+    res.status(403).json({ error: 'Host no permitido.' });
+    return;
+  }
+  if (req.path.startsWith('/api/') && req.method !== 'GET' && req.method !== 'HEAD' && req.headers[ENCABEZADO_APP] !== '1') {
+    res.status(403).json({ error: 'Petición rechazada: no viene de la app.' });
+    return;
+  }
+  next();
+});
 app.use(express.json());
 
 const esAudio = (req: { headers: Request['headers'] }) => /^(audio\/|video\/webm)/.test(req.headers['content-type'] ?? '');
